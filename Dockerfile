@@ -17,7 +17,12 @@ ENV npm_config_install_links=true
 COPY package.json package-lock.json ./
 COPY vendor/braces/ ./vendor/braces/
 COPY vendor/stream-json/ ./vendor/stream-json/
-RUN npm ci --ignore-scripts
+# RUN npm ci --ignore-scripts
+# Configure resilient npm timeouts and retries for container builds
+RUN npm config set fetch-retries 5 && \
+    npm config set fetch-retry-mintimeout 20000 && \
+    npm config set fetch-retry-maxtimeout 120000 && \
+    npm ci --ignore-scripts
 
 # Copy full source
 COPY . .
